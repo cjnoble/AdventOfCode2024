@@ -1,22 +1,29 @@
-DAY = 1
+import os
 
-day_str = f"{DAY:02d}"
+def new_day(day:int):
 
+    day_str = f"{day:02d}"
 
-with open(f"day_template.py", "r") as f_template:
-    with open(f"day_{day_str}.py", "a") as f:
-        day = f_template.readlines()
-        day[21] = f"    DAY = \"{day_str}\"\n"
-        f.writelines(day)
+    day_path = f"day_{day_str}.py"
+    if not os.path.exists(day_path):
+        with open(f"day_template.py", "r") as f_template:
+            with open(day_path, "a") as f:
+                day = f_template.readlines()
+                day[21] = f"    DAY = \"{day_str}\"\n"
+                f.writelines(day)
 
-with open(f"test_template.py", "r") as f_template:
-    with open(f"day_{day_str}_test.py", "a") as f:
-        test = f_template.readlines()
-        
-        test[1] = f"import day_{day_str} as day\n"
-        test[3] = f"DAY = \"{day_str}\"\n"
+    test_path = f"day_{day_str}_test.py"
+    if not os.path.exists(day_path):
+        with open(f"test_template.py", "r") as f_template:
+            with open( test_path, "a") as f:
+                test = f_template.readlines()
+                
+                test[1] = f"import day_{day_str} as day\n"
+                test[3] = f"DAY = \"{day_str}\"\n"
 
-        f.writelines(test)
+                f.writelines(test)
 
-open(f"{day_str}.txt", "a")
-open(f"{day_str}_test.txt", "a")
+if __name__ == "__main__":
+
+    DAY = 1
+    new_day(DAY)
