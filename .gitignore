@@ -1,1 +1,8 @@
 *__pycache__*
+
+# session cache for collect of input
+.session_cache.lock
+
+# real_input.txt (must not be shared)
+[0-9][0-9].txt
+! *test.txt
