@@ -1,5 +1,6 @@
 import os, subprocess
 import argparse
+import certifi
 import shutil
 from bs4 import BeautifulSoup
 import requests
@@ -39,22 +40,38 @@ def collect_test_input(instructions, test_input_path):
                     print(f"Content for test input saved at : {test_input_path}")
                 break
 
+
 def collect_real_input(day_url, session, real_input_path):
     '''
     COLLECT REAL INPUT
     '''
     if os.path.exists(real_input_path):
+        print(f"File already exists: {real_input_path}")
         return
     
-    with open(real_input_path,"w") as file:
+    # Define headers for the request
+    headers = {
+        "User-Agent": "{USER_AGENT}",
+        "Cookie": f"session={session}",
+    }
+    
+    # Perform the HTTP GET request
+    try:
+        response = requests.get(f"{day_url}/input", headers=headers, verify=certifi.where())
         
-        curl_command =  ["curl", f"{day_url}/input", "--cookie", f"session={session}", "-H 'User-Agent: {USER_AGENT}'"]
+        # Check if the response was successful
+        if response.status_code == 200:
+            with open(real_input_path, "w") as file:
+                file.write(response.text)
+            print(f"Content for real input saved at: {real_input_path}")
+        else:
+            print(f"Failed to fetch input. HTTP Status: {response.status_code}")
+            print(f"Response: {response.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching input: {e}")
 
-        output = subprocess.check_output(curl_command)
-        output = output.decode('utf-8')
-        file.write(output)
-        print(f"Content for real input saved at : {real_input_path}")
-        file.close()
+
+
 
 def daily_collect(args):
 
@@ -80,7 +97,7 @@ def daily_collect(args):
         raise EnvironmentError("AOC_USER_AGENT environment variable not set. Please configure it.")
 
     headers = {'User-Agent': USER_AGENT}
-    response = requests.get(day_url, headers=headers)
+    response = requests.get(day_url, headers=headers, verify=certifi.where())
 
     soup = BeautifulSoup(response.text, features="html.parser")
     instructions = soup.find('article',attrs={'class':'day-desc'})

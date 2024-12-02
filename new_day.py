@@ -13,7 +13,7 @@ def new_day(day:int):
                 f.writelines(day)
 
     test_path = f"day_{day_str}_test.py"
-    if not os.path.exists(day_path):
+    if not os.path.exists(test_path):
         with open(f"test_template.py", "r") as f_template:
             with open( test_path, "a") as f:
                 test = f_template.readlines()
@@ -25,5 +25,5 @@ def new_day(day:int):
 
 if __name__ == "__main__":
 
-    DAY = 1
+    DAY = 2
     new_day(DAY)
