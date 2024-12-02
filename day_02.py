@@ -1,16 +1,18 @@
 import re
 from itertools import tee
 
-def read_text_file (file_path):
+
+def read_text_file(file_path):
 
     with open(file_path, "r") as f:
         data = f.readlines()
-        data = [line.replace("\n","") for line in data]
+        data = [line.replace("\n", "") for line in data]
 
         data = [row.split() for row in data]
         data = [[int(i) for i in row] for row in data]
 
     return data
+
 
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
@@ -29,11 +31,9 @@ def test_safe(row):
     else:
         if max(diffs) > 3 or min(diffs) < -3:
             return False
-        
+
     return True
 
-
-    
 
 def part_1(data):
 
@@ -43,6 +43,7 @@ def part_1(data):
         safe_rows += 1 if test_safe(row) else 0
 
     return safe_rows
+
 
 def part_2(data):
 
@@ -59,8 +60,9 @@ def part_2(data):
                 if test_safe(test_row):
                     safe_rows += 1
                     break
-            
+
     return safe_rows
+
 
 if __name__ == "__main__":
 
