@@ -1,6 +1,8 @@
 import time
+from collections import namedtuple
 
-
+Block = namedtuple("Block", ["ID", "Length", "Moved"])
+Space = namedtuple("Space", ["Length"])
 
 def read_text_file (file_path):
 
@@ -13,7 +15,7 @@ def read_text_file (file_path):
 
 def parse_input(data):
 
-    data = [int(i) for i in data]
+    data = [int(i) for i in data[0]]
 
     length = sum(data)
 
@@ -21,30 +23,114 @@ def parse_input(data):
 
     ID = 0
     data_iter = iter(data)
+
     while True:
 
         try:
             file_length = next(data_iter)
-            system.extend([ID for i in range(file_length)])
+            system.extend([Block(ID, file_length, False) for i in range(file_length)])
             
-            space = next(data_iter)
-            system.extend(["." for i in range(space)])
+            space_length = next(data_iter)
+            system.extend([Space(space_length) for i in range(space_length)])
 
             ID += 1
 
         except StopIteration:
             break
 
+    return system
+
+def get_checksum(system):
+
+    checksum = 0
+
+    for i, block in enumerate(system):
+        if not isinstance(block, Space):
+            checksum += i * block.ID
+
+    return checksum
 
 def part_1(data):
 
-    parse_input(data)
+    system = parse_input(data)
 
-    return
+    i = 0
+    while True:
+
+        if i >= len(system):
+            break
+
+        if isinstance(system[i], Space):
+
+            end_data = None
+
+            while True:
+                end_data = system.pop()
+                if not isinstance(end_data, Space):
+                    break
+                elif i == len(system):
+                    end_data = None
+                    break
+
+            if end_data:
+                system[i] = end_data 
+
+        i += 1
+
+    return get_checksum(system)
 
 def part_2(data):
 
-    return
+    system = parse_input(data)
+
+    pointer = len(system)
+
+    while pointer > 0:
+
+        pointer -= 1
+
+        if isinstance(system[pointer], Space):
+            continue
+
+        else:
+            if not system[pointer].Moved:
+
+                search = 0
+                while search < pointer:
+
+                    if isinstance(system[search], Space):
+
+                        space_length = 1
+                        while True:
+                            if search + space_length >= len(system):
+                                break
+                            elif not isinstance(system[search + space_length], Space):
+                                break
+                            space_length += 1
+                            
+                        if space_length >= system[pointer].Length:
+                        
+                            for i in range(system[pointer].Length):
+
+                                if not isinstance(system[pointer - i], Block):
+                                    print("problmn")
+
+                                assert isinstance(system[pointer - i], Block )
+                                
+                                space_temp = system[search + i]
+
+                                system[search + i] = system[pointer - i]
+                                system[search + i] = system[search + i]._replace(Moved=True)
+                                system[pointer - i] = space_temp
+                            break
+                        search += space_length
+                    else:
+                        search += system[search].Length
+
+                #pointer -= system[search].Length
+                continue
+
+    return get_checksum(system)
 
 if __name__ == "__main__":
 

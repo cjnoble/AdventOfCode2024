@@ -16,8 +16,8 @@ class TestMethods(unittest.TestCase):
 
     def test_2(self):
 
-        expected = 0
-
+        expected = 2858
+        
         result = day.part_2(test_data)
 
         self.assertEqual(result, expected)
