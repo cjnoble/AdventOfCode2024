@@ -37,7 +37,7 @@ def collect_test_input(instructions, test_input_path):
                 pre_content = next_section.text.strip()
                 with open(test_input_path, "w", encoding="utf-8") as file:
                     file.write(pre_content)
-                    print(f"Content for test input saved at : {test_input_path}")
+                    print(f"Content for test input saved at: {test_input_path}")
                 break
 
 
