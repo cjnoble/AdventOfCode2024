@@ -12,3 +12,7 @@
 
 #Virtual Env
 /.venv
+
+
+
+*.png
