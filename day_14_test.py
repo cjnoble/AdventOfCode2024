@@ -1,16 +1,16 @@
 import unittest
-import day_13 as day
+import day_14 as day
 
-DAY = "13"
+DAY = "14"
 test_data = day.read_text_file(f"{DAY}_test.txt")
 
 class TestMethods(unittest.TestCase):
 
     def test_1(self):
 
-        expected = 480
+        expected = 12   
 
-        result = day.part_1(test_data)[0]
+        result = day.part_1(test_data, 11, 7)
 
         self.assertEqual(result, expected)
 
