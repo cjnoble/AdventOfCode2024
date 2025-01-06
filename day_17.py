@@ -168,58 +168,132 @@ def part_1(data):
     return computer.print_out()
 
 
+def octal_list_to_int(a_list):
+    # most significant bit first:
+
+    queue = list(a_list)
+
+    out = 0
+
+    while queue :
+        i = queue.pop(0)
+
+        if i >= 8:
+            raise Exception("Invalid octal")
+        
+        out = out << 3
+        out += i
+        
+    return out
+
+def check_next_bit_recursive(current_out, current_pos):
+
+    cur_prog_match = Computer_3Bit.init_from_data(data).program[-(current_pos+1):]
+
+    for A in range(8):
+
+        test_A = current_out.copy()
+        test_A.append(A)
+
+        computer = Computer_3Bit.init_from_data(data)
+
+        computer.A = octal_list_to_int(test_A)
+
+        computer.run()
+
+        assert len(computer.output) == len(cur_prog_match)
+
+        if computer.output == cur_prog_match:
+
+            if current_pos + 1 >= len(computer.program):
+                return test_A
+            else:
+                
+                res = check_next_bit_recursive(test_A, current_pos + 1)
+
+                if res:
+                    print(res, octal_list_to_int(res), test(data, octal_list_to_int(res)))
+                    return res
+
+    return None
+    
 def part_2(data):
 
     out = []
 
     for j in range(8):
         print(j, test(data, j))
-
-    for i in Computer_3Bit.init_from_data(data).program:
-
-        match = False
-
-        # if i == 0:
-        #     out.append(0)
-        #     match = True
-        #     break
     
-        for A in range(8):
+    out = check_next_bit_recursive(out, 0)
 
-            computer = Computer_3Bit.init_from_data(data)
-
-            computer.A = A#<<3
-
-            computer.run()
-
-            if computer.output[0] == i:
-                out.append(A)
-                match = True
-                break
-        
-        if not match:
-            raise Exception(f"No match for {i}")
-        else:
-            print(A, "->", i)
-
-    print(out)
-
-    res = 0
-    while out:
-        res += out.pop()
-        res = res << 3
-
-    return res
+    return octal_list_to_int(out)
 
 def test(data, A):
-
-    #Register A: 729
 
     computer = Computer_3Bit.init_from_data(data)
     computer.A = A
     computer.run()
 
     return computer.print_out()
+
+def calculate_min_and_max_A():
+    # Largest 16-digit octal number (octal: 7777777777777777)
+    max_A = int("7777777777777777", 8)
+    
+    # Smallest 16-digit octal number starting with 702642030660 (octal)
+    min_octal_prefix = "7026420306"  # Given prefix
+    min_A = int(min_octal_prefix.ljust(16, '0'), 8)  # Pad with zeros to make 16 digits
+
+    return min_A, max_A
+
+def find_lowest_initial_A_with_range(program, min_A, max_A):
+    """
+    Find the lowest initial value of A within a specified range [min_A, max_A]
+    that causes the program to output a copy of itself.
+
+    Args:
+        program (list): The list of 3-bit numbers (the program).
+        min_A (int): Minimum value for A to test.
+        max_A (int): Maximum value for A to test.
+
+    Returns:
+        int: The lowest value of A that works, or None if no valid A is found.
+    """
+    for A in range(min_A, max_A + 1):  # Iterate through range [min_A, max_A]
+       
+        # Initialize the computer with the current value of A
+        computer = Computer_3Bit(A, 0, 0, program)
+        computer.run()
+        
+         # Print the current value of A being tested (in octal)
+        # Print the resulting output
+        print(f"Testing A = {oct(A)[2:]} (octal) -> Output: {computer.print_out()}")
+        
+        # Check if the output matches the program
+        if computer.output == program:
+            return A  # Return the first valid A found
+
+    return None  # Return None if no valid A is found in the range
+
+def part_2_bf():
+    # Calculate min_A and max_A
+    min_A, max_A = calculate_min_and_max_A()
+
+    print(f"Min A (decimal): {min_A}")
+    print(f"Max A (decimal): {max_A}")
+
+    program = [2, 4, 1, 1, 7, 5, 0, 3, 4, 7, 1, 6, 5, 5, 3, 0]
+
+    # Calculate min_A and max_A
+    min_A, max_A = calculate_min_and_max_A()
+
+    # Find the lowest valid A
+    lowest_A = find_lowest_initial_A_with_range(program, min_A, max_A)
+
+    if lowest_A is not None:
+        print(f"The lowest initial value for register A is: {lowest_A}")
+    else:
+        print(f"No valid initial value for A was found in the range {min_A} to {max_A}.")
 
 
 if __name__ == "__main__":
@@ -229,6 +303,8 @@ if __name__ == "__main__":
     part_1_start = time.time()
     print(part_1(data))
     print(f"Part 1 finished in {time.time() - part_1_start} s")
+
+    #part_2_bf()
 
     part_2_start = time.time()
     res_part2 = part_2(data)

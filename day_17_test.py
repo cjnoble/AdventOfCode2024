@@ -16,15 +16,10 @@ class TestMethods(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_2(self):
-
-        out = day.test(test_data_2, 3)
         
-        expected = 117440
+        expected = "0,3,5,4,3,0"
 
-        out = day.test(test_data_2, expected)
-        print(out)
-
-        result = day.part_2(test_data_2)
+        result = day.test(test_data_2, 117440)
 
         self.assertEqual(result, expected)
 
